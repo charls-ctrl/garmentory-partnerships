@@ -1,0 +1,694 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="How the Garmentory boutique acquisition system works: the loop, the scripts, the tools, the email sequence, the rules, and the daily routine.">
+<title>Boutique Acquisition System</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: a marketplace-style editorial page. Ticker, rounded hero panel, serif statement with blob,
+   then working diagrams of the loop, the crew, the tools, the sequence, the guardrails, and the day. */
+:root{
+  --bg:#f3efe8; --paper:#fbf9f5; --ink:#1e1d1a; --muted:#68625a; --line:#dcd4c6;
+  --green:#2c5530; --on-green:#f3efe8; --mustard:#d6bf57; --mustard-soft:#efe4ae; --rose:#c4523b;
+  --term-bg:#1b1e1a; --term-ink:#e8e4da; --term-dim:#8d978a; --term-ok:#a5cf97;
+  --shadow:0 1px 0 rgba(30,29,26,.04), 0 10px 30px -18px rgba(30,29,26,.35);
+  --f-display:"Archivo", "Helvetica Neue", Arial, sans-serif;
+  --f-serif:"Instrument Serif", "Iowan Old Style", Georgia, serif;
+  --f-body:"Archivo", "Helvetica Neue", Arial, sans-serif;
+  --f-mono:"JetBrains Mono", ui-monospace, Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --bg:#151512; --paper:#1f1e1a; --ink:#eeeae1; --muted:#a59f93; --line:#36342e;
+  --green:#28482d; --on-green:#f0ebe0; --mustard:#d9c260; --mustard-soft:#463f22; --rose:#e27d64;
+  --term-bg:#0e100e; --term-ink:#e8e4da; --term-dim:#8d978a; --term-ok:#a5cf97;
+  --shadow:0 1px 0 rgba(0,0,0,.3), 0 12px 30px -16px rgba(0,0,0,.7);
+  color-scheme:dark;
+}}
+:root[data-theme="dark"]{
+  --bg:#151512; --paper:#1f1e1a; --ink:#eeeae1; --muted:#a59f93; --line:#36342e;
+  --green:#28482d; --on-green:#f0ebe0; --mustard:#d9c260; --mustard-soft:#463f22; --rose:#e27d64;
+  --term-bg:#0e100e; --term-ink:#e8e4da; --term-dim:#8d978a; --term-ok:#a5cf97;
+  --shadow:0 1px 0 rgba(0,0,0,.3), 0 12px 30px -16px rgba(0,0,0,.7);
+  color-scheme:dark;
+}
+
+*{box-sizing:border-box}
+img{max-width:100%}
+[hidden]{display:none!important}
+html{scroll-behavior:smooth}
+body{margin:0; background:var(--bg); color:var(--ink); font-family:var(--f-body); font-size:16px; line-height:1.55; padding-inline:16px; padding-block:0 48px; overflow-x:hidden}
+.wrap{max-width:1180px; margin-inline:auto}
+a{color:inherit}
+:focus-visible{outline:2px solid var(--mustard); outline-offset:3px; border-radius:6px}
+h1,h2,h3{text-wrap:balance; margin:0}
+p{margin:0}
+
+/* type */
+.caps{font-family:var(--f-display); text-transform:uppercase; font-weight:700; letter-spacing:.06em; font-size:.78rem}
+.display{font-family:var(--f-display); font-weight:800; text-transform:uppercase; font-variation-settings:"wdth" 112; letter-spacing:-.01em; line-height:.92}
+.serif{font-family:var(--f-serif); font-weight:400}
+.serif i, .serif em{font-style:italic}
+.mono{font-family:var(--f-mono)}
+.lede{color:var(--muted); max-width:62ch}
+
+/* ticker */
+.ticker{margin-inline:-16px; background:var(--green); color:var(--on-green); overflow:hidden; white-space:nowrap; padding-block:9px}
+.ticker__track{display:inline-flex; gap:42px; animation:ticker 38s linear infinite; padding-left:42px}
+.ticker__track span{font-family:var(--f-display); font-weight:700; letter-spacing:.14em; font-size:.72rem; text-transform:uppercase; display:inline-flex; gap:42px}
+.ticker__track span::after{content:"✦"; color:var(--mustard)}
+@keyframes ticker{to{transform:translateX(-50%)}}
+
+/* header */
+.top{display:flex; align-items:center; justify-content:space-between; gap:16px; padding-block:18px; flex-wrap:wrap}
+.brand{font-family:var(--f-display); font-weight:900; font-variation-settings:"wdth" 118; letter-spacing:.02em; font-size:1.05rem; text-transform:uppercase}
+.brand small{display:block; font-family:var(--f-serif); font-style:italic; text-transform:none; font-weight:400; letter-spacing:0; font-size:.95rem; color:var(--muted); font-variation-settings:normal}
+.nav{display:flex; gap:20px; flex-wrap:wrap}
+.nav a{font-family:var(--f-display); font-weight:700; text-transform:uppercase; font-size:.74rem; letter-spacing:.08em; text-decoration:none; padding-block:4px; border-bottom:1.5px solid transparent; transition:border-color .2s}
+.nav a:hover{border-color:var(--ink)}
+.pill{appearance:none; border:1.5px solid var(--ink); background:transparent; color:var(--ink); font-family:var(--f-display); font-weight:700; text-transform:uppercase; letter-spacing:.08em; font-size:.72rem; padding:8px 16px; border-radius:999px; cursor:pointer; display:inline-flex; align-items:center; gap:8px; transition:background .2s, color .2s}
+.pill:hover{background:var(--ink); color:var(--bg)}
+.pill svg{width:14px; height:14px}
+
+/* hero */
+.hero{position:relative; overflow:hidden; border-radius:24px; background:var(--green); color:var(--on-green); padding:clamp(36px,7vw,84px) clamp(22px,5vw,64px); isolation:isolate}
+.hero__blob{position:absolute; z-index:-1; width:min(520px,80vw); aspect-ratio:1; right:-6%; top:-18%; background:var(--mustard); opacity:.9; border-radius:42% 58% 63% 37% / 41% 44% 56% 59%; animation:morph 14s ease-in-out infinite alternate; max-width:100%}
+.hero__blob--two{width:min(260px,50vw); right:auto; left:-60px; top:auto; bottom:-90px; opacity:.22; animation-duration:18s; animation-direction:alternate-reverse}
+@keyframes morph{
+  0%{border-radius:42% 58% 63% 37% / 41% 44% 56% 59%; transform:rotate(0deg) translate(0,0)}
+  50%{border-radius:61% 39% 38% 62% / 57% 39% 61% 43%; transform:rotate(18deg) translate(-14px,12px)}
+  100%{border-radius:36% 64% 52% 48% / 38% 62% 38% 62%; transform:rotate(-10deg) translate(10px,-8px)}
+}
+.hero .caps{opacity:.85}
+.hero h1{font-size:clamp(2.7rem,8.6vw,7.4rem); margin-top:14px}
+.hero h1 .ln{display:block}
+.hero h1 .ln:nth-child(2){padding-left:clamp(0px,6vw,90px)}
+.hero h1 .ln:nth-child(3){padding-left:clamp(0px,12vw,180px)}
+.hero__sub{margin-top:22px; font-family:var(--f-serif); font-size:clamp(1.35rem,2.4vw,1.85rem); line-height:1.25; max-width:30ch}
+.hero__row{display:flex; flex-wrap:wrap; gap:14px 22px; align-items:center; margin-top:30px}
+.cta{display:inline-flex; align-items:center; gap:10px; background:var(--on-green); color:var(--green); text-decoration:none; font-family:var(--f-display); font-weight:800; text-transform:uppercase; letter-spacing:.07em; font-size:.8rem; padding:13px 22px; border-radius:999px; transition:transform .2s}
+.cta:hover{transform:translateY(-2px)}
+.cta .arr{display:inline-block; animation:nudge 1.4s ease-in-out infinite}
+@keyframes nudge{0%,100%{transform:translateY(0)}50%{transform:translateY(4px)}}
+.hero__tags{display:flex; flex-wrap:wrap; gap:8px}
+.tag{font-family:var(--f-display); font-weight:700; text-transform:uppercase; letter-spacing:.08em; font-size:.66rem; border:1px solid currentColor; border-radius:999px; padding:5px 11px; opacity:.85}
+
+/* statement */
+.statement{text-align:center; padding-block:clamp(64px,10vw,120px) 24px; position:relative}
+.statement .caps{color:var(--muted)}
+.statement p.serif{font-size:clamp(1.45rem,3vw,2.15rem); line-height:1.2; max-width:34ch; margin:14px auto 0}
+.intent{position:relative; display:grid; place-items:center; margin-top:46px; min-height:clamp(220px,34vw,360px)}
+.intent__blob{position:absolute; width:clamp(200px,32vw,340px); aspect-ratio:1; background:var(--mustard); border-radius:58% 42% 46% 54% / 49% 58% 42% 51%; animation:morph 16s ease-in-out infinite alternate; max-width:100%}
+.intent__text{position:relative; font-family:var(--f-serif); line-height:.86; text-align:center}
+.intent__text .a{display:block; font-size:clamp(3.6rem,10vw,7.8rem); transform:translateX(-12%)}
+.intent__text .b{display:block; font-size:clamp(1.6rem,3.4vw,2.6rem); font-style:italic}
+.intent__text .c{display:block; font-size:clamp(3.6rem,10vw,7.8rem); font-style:italic; transform:translateX(14%)}
+
+/* sections */
+section.block{padding-block:clamp(56px,8vw,96px) 0}
+.sec-head{display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1.1fr); gap:16px 48px; align-items:end; margin-bottom:34px}
+.sec-head h2{font-family:var(--f-serif); font-size:clamp(2.4rem,5.4vw,4.2rem); line-height:.95; font-weight:400}
+.sec-head h2 em{font-style:italic}
+.sec-head .caps{color:var(--muted); display:block; margin-bottom:10px}
+@media (max-width:760px){.sec-head{grid-template-columns:1fr}}
+
+/* loop / pipeline */
+.loop{background:var(--paper); border:1px solid var(--line); border-radius:22px; padding:clamp(18px,3vw,30px); box-shadow:var(--shadow)}
+.legend{display:flex; gap:18px; flex-wrap:wrap; margin-bottom:18px}
+.legend span{display:inline-flex; align-items:center; gap:8px; font-size:.82rem; color:var(--muted)}
+.dot{width:10px; height:10px; border-radius:50%; background:var(--green); display:inline-block}
+.dot--you{background:var(--mustard); box-shadow:0 0 0 2px var(--ink) inset}
+.stages-wrap{position:relative}
+.stages{display:grid; grid-template-columns:repeat(8,minmax(0,1fr)); gap:10px; list-style:none; padding:26px 0 0; margin:0}
+.rail{position:absolute; left:0; right:0; top:8px; height:3px; background:var(--line); border-radius:3px; overflow:hidden}
+.rail i{position:absolute; inset:0 auto 0 0; width:0; background:var(--green); border-radius:3px; transition:width .7s cubic-bezier(.6,.1,.2,1)}
+.stage{appearance:none; text-align:left; font:inherit; color:inherit; background:transparent; border:1.5px solid var(--line); border-radius:16px; padding:14px 12px 14px; cursor:pointer; display:flex; flex-direction:column; gap:8px; min-width:0; transition:border-color .25s, background .25s, transform .25s; position:relative}
+.stage:hover{border-color:var(--ink); transform:translateY(-2px)}
+.stage__n{font-family:var(--f-mono); font-size:.72rem; color:var(--muted); display:flex; justify-content:space-between; align-items:center}
+.stage__n .dot{width:9px; height:9px}
+.stage__t{font-family:var(--f-display); font-weight:800; text-transform:uppercase; letter-spacing:.02em; font-size:.92rem; font-variation-settings:"wdth" 108; line-height:1.05}
+.stage__who{font-size:.72rem; color:var(--muted)}
+.stage.is-on{border-color:var(--green); background:color-mix(in srgb, var(--green) 9%, transparent)}
+.stage.is-on.you{border-color:var(--ink); background:var(--mustard-soft)}
+.stage.is-on::before{content:""; position:absolute; top:-24px; left:14px; width:13px; height:13px; border-radius:50%; background:var(--green); box-shadow:0 0 0 5px color-mix(in srgb, var(--green) 22%, transparent)}
+.stage.is-on.you::before{background:var(--mustard); box-shadow:0 0 0 5px color-mix(in srgb, var(--mustard) 35%, transparent)}
+.detail{margin-top:22px; display:grid; grid-template-columns:auto minmax(0,1fr); gap:18px 26px; align-items:start; border-top:1px solid var(--line); padding-top:22px}
+.detail__big{font-family:var(--f-serif); font-style:italic; font-size:clamp(2.4rem,5vw,3.6rem); line-height:.9; min-width:5ch}
+.detail__body{min-width:0}
+.detail__body h3{font-family:var(--f-display); text-transform:uppercase; font-weight:800; font-size:1.05rem; letter-spacing:.03em}
+.detail__body p{color:var(--muted); margin-top:6px; max-width:64ch}
+.detail__chips{display:flex; flex-wrap:wrap; gap:6px; margin-top:12px}
+.chip{font-family:var(--f-mono); font-size:.72rem; border:1px solid var(--line); background:var(--bg); border-radius:999px; padding:3px 10px; color:var(--ink)}
+.autoplay{margin-left:auto; font-size:.78rem; color:var(--muted); display:inline-flex; gap:8px; align-items:center}
+.autoplay button{appearance:none; background:none; border:1.5px solid var(--line); color:var(--ink); border-radius:999px; padding:4px 12px; font:inherit; font-size:.76rem; cursor:pointer}
+.autoplay button:hover{border-color:var(--ink)}
+@media (max-width:980px){ .stages{grid-template-columns:repeat(4,minmax(0,1fr))} .rail{display:none} .stage.is-on::before{display:none} }
+@media (max-width:520px){ .stages{grid-template-columns:repeat(2,minmax(0,1fr))} .detail{grid-template-columns:1fr} }
+
+/* crew run */
+.run{display:grid; grid-template-columns:minmax(0,1.25fr) minmax(0,1fr); gap:22px; align-items:stretch}
+@media (max-width:900px){.run{grid-template-columns:1fr}}
+.board{background:var(--paper); border:1px solid var(--line); border-radius:22px; padding:clamp(18px,3vw,28px); box-shadow:var(--shadow); display:flex; flex-direction:column; gap:18px; min-width:0}
+.conductor{display:flex; align-items:center; gap:14px; background:var(--green); color:var(--on-green); border-radius:14px; padding:14px 16px; flex-wrap:wrap}
+.conductor .mono{font-weight:600}
+.conductor .caps{opacity:.8; font-size:.68rem}
+.conductor__pulse{width:12px; height:12px; border-radius:50%; background:var(--mustard); animation:pulse 1.6s ease-out infinite}
+@keyframes pulse{0%{box-shadow:0 0 0 0 color-mix(in srgb, var(--mustard) 70%, transparent)}100%{box-shadow:0 0 0 14px transparent}}
+.lane__label{font-family:var(--f-serif); font-style:italic; font-size:1.15rem; color:var(--muted); margin-bottom:8px}
+.chain{display:flex; flex-wrap:wrap; gap:8px; align-items:center}
+.node{font-family:var(--f-mono); font-size:.76rem; border:1.5px solid var(--line); border-radius:10px; padding:8px 11px; background:var(--bg); position:relative; transition:border-color .3s, background .3s, color .3s}
+.node::after{content:""; position:absolute; left:8px; right:8px; bottom:4px; height:2px; background:var(--green); transform:scaleX(0); transform-origin:left; border-radius:2px}
+.node.is-run{border-color:var(--green)}
+.node.is-run::after{animation:fill 1s linear forwards}
+.node.is-done{border-color:var(--green); background:var(--green); color:var(--on-green)}
+@keyframes fill{to{transform:scaleX(1)}}
+.arrow{color:var(--muted); font-size:.85rem}
+.parallel{display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px; max-width:440px}
+.parallel .node{text-align:center}
+
+.term{background:var(--term-bg); color:var(--term-ink); border-radius:22px; padding:0; overflow:hidden; display:flex; flex-direction:column; min-width:0; box-shadow:var(--shadow)}
+.term__bar{display:flex; align-items:center; gap:7px; padding:12px 16px; border-bottom:1px solid rgba(255,255,255,.08)}
+.term__bar i{width:10px; height:10px; border-radius:50%; background:#5a5f57}
+.term__bar i:first-child{background:#c4523b} .term__bar i:nth-child(2){background:#d6bf57} .term__bar i:nth-child(3){background:#6f9b6a}
+.term__bar span{margin-left:10px; font-family:var(--f-mono); font-size:.72rem; color:var(--term-dim)}
+.term__body{font-family:var(--f-mono); font-size:.8rem; line-height:1.75; padding:16px 18px 20px; overflow-x:auto; min-height:300px}
+.term__body div{white-space:pre}
+.t-dim{color:var(--term-dim)} .t-ok{color:var(--term-ok)} .t-mu{color:#d6bf57}
+.caret{display:inline-block; width:8px; height:1em; background:var(--term-ink); vertical-align:-2px; animation:blink 1s steps(1) infinite}
+@keyframes blink{50%{opacity:0}}
+
+/* crew cards */
+.crew{display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:14px; margin-top:22px}
+@media (max-width:980px){.crew{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:520px){.crew{grid-template-columns:1fr}}
+.mate{border:1px solid var(--line); border-radius:18px; padding:18px; display:flex; flex-direction:column; gap:10px; background:var(--bg); transition:transform .25s, border-color .25s; min-width:0}
+.mate:hover{transform:translateY(-3px); border-color:var(--ink)}
+.mate__role{font-family:var(--f-serif); font-style:italic; font-size:1.7rem; line-height:1}
+.mate__file{font-family:var(--f-mono); font-size:.74rem; color:var(--muted); overflow-wrap:anywhere}
+.mate p{font-size:.9rem; color:var(--muted)}
+.mate__io{display:flex; flex-wrap:wrap; gap:6px; margin-top:auto}
+.io{font-family:var(--f-display); font-weight:700; text-transform:uppercase; letter-spacing:.06em; font-size:.62rem; border-radius:999px; padding:4px 9px; border:1px solid var(--line)}
+.io--r{background:var(--paper)}
+.io--w{background:var(--mustard-soft); border-color:transparent}
+
+/* tools */
+.tools{display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:14px}
+@media (max-width:860px){.tools{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:480px){.tools{grid-template-columns:1fr}}
+.tool{position:relative; overflow:hidden; border-radius:20px; min-height:230px; padding:22px; display:flex; flex-direction:column; justify-content:space-between; gap:16px; color:var(--on-green); background:var(--green); isolation:isolate; transition:transform .3s}
+.tool:hover{transform:translateY(-4px)}
+.tool::before{content:""; position:absolute; z-index:-1; width:240px; aspect-ratio:1; border-radius:50%; right:-70px; top:-80px; background:var(--mustard); opacity:.28; transition:transform .6s cubic-bezier(.2,.8,.2,1)}
+.tool:hover::before{transform:scale(1.5) translate(-20px,20px)}
+.tool:nth-child(2){background:var(--ink); color:var(--bg)}
+.tool:nth-child(3){background:var(--mustard); color:#1e1d1a}
+.tool:nth-child(3)::before{background:var(--on-green); opacity:.35}
+.tool:nth-child(4){background:var(--rose); color:#fbf9f5}
+.tool:nth-child(5){background:var(--paper); color:var(--ink); border:1px solid var(--line)}
+.tool:nth-child(6){background:color-mix(in srgb, var(--green) 70%, var(--ink))}
+.tool h3{font-family:var(--f-display); font-weight:900; text-transform:uppercase; font-variation-settings:"wdth" 118; font-size:clamp(1.7rem,3vw,2.3rem); line-height:.95; letter-spacing:-.01em}
+.tool__nick{font-family:var(--f-serif); font-style:italic; font-size:1.35rem; line-height:1.1}
+.tool p{font-size:.88rem; opacity:.88; max-width:36ch}
+
+/* sequence */
+.seqs{display:flex; flex-direction:column; gap:20px}
+.seq{background:var(--paper); border:1px solid var(--line); border-radius:22px; padding:clamp(18px,3vw,28px); box-shadow:var(--shadow); min-width:0}
+.seq__head{display:flex; justify-content:space-between; gap:12px; flex-wrap:wrap; align-items:baseline; margin-bottom:6px}
+.seq__head h3{font-family:var(--f-serif); font-size:1.9rem; font-weight:400}
+.seq__head p{color:var(--muted); font-size:.9rem; max-width:52ch}
+.track-scroll{overflow-x:auto; padding-bottom:6px}
+.track{position:relative; display:flex; align-items:flex-start; gap:0; min-width:760px; padding-top:72px; padding-bottom:6px}
+.track__line{position:absolute; left:28px; right:28px; top:99px; height:2px; background:repeating-linear-gradient(90deg, var(--line) 0 8px, transparent 8px 14px)}
+.env{position:absolute; top:86px; left:28px; width:30px; height:26px; animation:travel 9s cubic-bezier(.5,0,.5,1) infinite; z-index:2}
+.env svg{width:30px; height:26px; display:block}
+.track--post .env{animation-duration:7s; animation-delay:-2s}
+@keyframes travel{0%{left:28px; opacity:0}5%{opacity:1}90%{opacity:1}100%{left:calc(100% - 58px); opacity:0}}
+.stop{flex:1 1 0; display:flex; flex-direction:column; align-items:center; text-align:center; gap:6px; position:relative; z-index:1; min-width:0}
+.stop__dot{width:56px; height:56px; border-radius:50%; display:grid; place-items:center; background:var(--bg); border:1.5px solid var(--ink); font-family:var(--f-display); font-weight:800; font-size:.86rem; font-variation-settings:"wdth" 110}
+.stop--alt .stop__dot{border-style:dashed}
+.stop--end .stop__dot{background:var(--mustard); border-color:var(--mustard); color:#1e1d1a}
+.stop__label{font-size:.8rem; font-weight:600; line-height:1.25}
+.stop__note{font-size:.72rem; color:var(--muted); line-height:1.3; max-width:16ch}
+.wait{position:absolute; top:-30px; left:50%; transform:translateX(50%); white-space:nowrap; font-family:var(--f-serif); font-style:italic; color:var(--muted); font-size:.98rem}
+.thread{position:absolute; top:0; height:24px; border:1.5px solid var(--green); border-bottom:none; border-radius:10px 10px 0 0; display:flex; justify-content:center}
+.thread span{position:relative; top:-11px; background:var(--paper); padding-inline:8px; font-family:var(--f-display); text-transform:uppercase; font-weight:700; letter-spacing:.08em; font-size:.62rem; color:var(--green); height:max-content}
+:root[data-theme="dark"] .thread span{color:var(--term-ok)}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .thread span{color:var(--term-ok)}}
+.stopper{margin-top:16px; display:flex; gap:12px; align-items:center; font-size:.92rem; padding:12px 16px; border-radius:14px; background:var(--mustard-soft)}
+.stopper strong{font-family:var(--f-display); text-transform:uppercase; letter-spacing:.05em; font-size:.8rem}
+
+/* guardrails */
+.rails{display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:0; border-top:1.5px solid var(--ink)}
+@media (max-width:860px){.rails{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:520px){.rails{grid-template-columns:1fr}}
+.rule{padding:24px 22px 26px 0; border-bottom:1px solid var(--line); display:flex; flex-direction:column; gap:10px; min-width:0}
+.rule + .rule{padding-left:0}
+@media (min-width:861px){ .rule:not(:nth-child(3n+1)){padding-left:22px; border-left:1px solid var(--line)} }
+@media (min-width:521px) and (max-width:860px){ .rule:nth-child(2n){padding-left:22px; border-left:1px solid var(--line)} }
+.rule svg{width:34px; height:34px; color:var(--green)}
+:root[data-theme="dark"] .rule svg{color:var(--term-ok)}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .rule svg{color:var(--term-ok)}}
+.rule h3{font-family:var(--f-display); text-transform:uppercase; font-weight:800; font-size:1rem; letter-spacing:.02em; font-variation-settings:"wdth" 106}
+.rule p{color:var(--muted); font-size:.92rem}
+.watch{margin-top:26px; display:grid; grid-template-columns:auto minmax(0,1fr); gap:16px; align-items:start; border:1.5px dashed var(--rose); border-radius:18px; padding:20px}
+.watch__badge{font-family:var(--f-display); font-weight:800; text-transform:uppercase; letter-spacing:.08em; font-size:.68rem; color:var(--rose); border:1.5px solid var(--rose); border-radius:999px; padding:4px 10px; white-space:nowrap}
+.watch h3{font-family:var(--f-serif); font-size:1.6rem; font-weight:400}
+.watch p{color:var(--muted); margin-top:4px; max-width:70ch}
+@media (max-width:520px){.watch{grid-template-columns:1fr}}
+
+/* day */
+.day{display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:22px}
+@media (max-width:860px){.day{grid-template-columns:1fr}}
+.checks{list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:10px}
+.check{display:grid; grid-template-columns:auto minmax(0,1fr) auto; gap:14px; align-items:center; padding:16px 18px; border:1px solid var(--line); border-radius:16px; background:var(--paper); cursor:pointer; transition:background .25s, border-color .25s}
+.check:hover{border-color:var(--ink)}
+.check input{appearance:none; width:24px; height:24px; border-radius:50%; border:1.5px solid var(--ink); display:grid; place-items:center; margin:0; cursor:pointer; background:var(--bg)}
+.check input:checked{background:var(--green); border-color:var(--green)}
+.check input:checked::after{content:""; width:10px; height:6px; border-left:2px solid var(--on-green); border-bottom:2px solid var(--on-green); transform:rotate(-45deg) translate(1px,-1px)}
+.check b{font-family:var(--f-display); text-transform:uppercase; font-size:.92rem; letter-spacing:.03em; display:block}
+.check span{color:var(--muted); font-size:.86rem}
+.check em{font-family:var(--f-serif); color:var(--muted); font-size:1.05rem}
+.check:has(input:checked){background:var(--mustard-soft); border-color:transparent}
+.check:has(input:checked) b{text-decoration:line-through; text-decoration-thickness:1.5px}
+.rebuild{background:var(--green); color:var(--on-green); border-radius:22px; padding:clamp(22px,4vw,36px); display:flex; flex-direction:column; gap:16px; position:relative; overflow:hidden; isolation:isolate}
+.rebuild::after{content:""; position:absolute; z-index:-1; width:300px; aspect-ratio:1; right:-90px; bottom:-120px; background:var(--mustard); border-radius:46% 54% 60% 40% / 50% 42% 58% 50%; animation:morph 15s ease-in-out infinite alternate; opacity:.9}
+.rebuild h3{font-family:var(--f-serif); font-weight:400; font-size:clamp(2rem,4vw,2.8rem); line-height:1}
+.rebuild p{max-width:44ch; opacity:.9}
+.prompt{display:flex; gap:10px; align-items:stretch; flex-wrap:wrap; margin-top:4px}
+.prompt code{flex:1 1 240px; min-width:0; font-family:var(--f-mono); font-size:.84rem; background:rgba(0,0,0,.22); border-radius:12px; padding:12px 14px; user-select:all; overflow-wrap:anywhere}
+.copy{appearance:none; border:none; background:var(--on-green); color:var(--green); font-family:var(--f-display); font-weight:800; text-transform:uppercase; letter-spacing:.07em; font-size:.74rem; padding:0 18px; border-radius:12px; cursor:pointer; min-height:44px; display:inline-flex; align-items:center; gap:8px}
+.copy:hover{filter:brightness(.95)}
+.copy .arr{display:inline-block; animation:side 1.4s ease-in-out infinite}
+@keyframes side{0%,100%{transform:translateX(0)}50%{transform:translateX(3px)}}
+.rebuild ul{margin:0; padding-left:18px; opacity:.9; font-size:.92rem; display:flex; flex-direction:column; gap:4px}
+
+footer{margin-top:72px; padding-top:22px; border-top:1px solid var(--line); display:flex; justify-content:space-between; flex-wrap:wrap; gap:12px; color:var(--muted); font-size:.82rem}
+footer .serif{font-size:1.1rem; color:var(--ink)}
+
+@media (prefers-reduced-motion: reduce){
+  *,*::before,*::after{animation-duration:.001ms !important; animation-iteration-count:1 !important; transition-duration:.001ms !important}
+  .env{display:none}
+  html{scroll-behavior:auto}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="ticker" aria-hidden="true">
+    <div class="ticker__track">
+      <span>Find boutiques</span><span>Review the fit</span><span>Find the right person</span><span>Draft the email</span><span>You press send</span><span>Track every reply</span><span>Report back</span><span>Repeat</span>
+      <span>Find boutiques</span><span>Review the fit</span><span>Find the right person</span><span>Draft the email</span><span>You press send</span><span>Track every reply</span><span>Report back</span><span>Repeat</span>
+    </div>
+  </div>
+
+  <header class="top">
+    <div class="brand">Boutique Acquisition<small>a field guide for Garmentory</small></div>
+    <nav class="nav" aria-label="Sections">
+      <a href="#loop">The loop</a>
+      <a href="#crew">The crew</a>
+      <a href="#tools">The tools</a>
+      <a href="#sequence">The sequence</a>
+      <a href="#rules">The rules</a>
+      <a href="#day">Your day</a>
+    </nav>
+    <button class="pill" id="themeBtn" type="button" aria-label="Switch between light and dark">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+      <span id="themeLabel">Dark</span>
+    </button>
+  </header>
+
+  <section class="hero" aria-labelledby="heroTitle">
+    <div class="hero__blob" aria-hidden="true"></div>
+    <div class="hero__blob hero__blob--two" aria-hidden="true"></div>
+    <span class="caps">How the outreach system works</span>
+    <h1 class="display" id="heroTitle"><span class="ln">Find them.</span><span class="ln">Write them.</span><span class="ln">Follow up.</span></h1>
+    <p class="hero__sub">A small crew of scripts finds independent boutiques, drafts the emails, and keeps score. <em>You</em> make every call that needs taste.</p>
+    <div class="hero__row">
+      <a class="cta" href="#loop">See the loop <span class="arr" aria-hidden="true">↓</span></a>
+      <div class="hero__tags" aria-label="What a good fit looks like">
+        <span class="tag">Multi-brand</span><span class="tag">US-based</span><span class="tag">Independent</span>
+      </div>
+    </div>
+  </section>
+
+  <div class="statement">
+    <span class="caps">What it is</span>
+    <p class="serif">It finds the boutiques that already stock the designers Garmentory loves, introduces you, and remembers every conversation so nobody falls through the cracks.</p>
+    <div class="intent" aria-hidden="true">
+      <div class="intent__blob"></div>
+      <div class="intent__text"><span class="a">Outreach</span><span class="b">with</span><span class="c">Intention</span></div>
+    </div>
+  </div>
+
+  <!-- THE LOOP -->
+  <section class="block" id="loop" aria-labelledby="loopTitle">
+    <div class="sec-head">
+      <div><span class="caps">The loop</span><h2 id="loopTitle">Eight steps, <em>two of them yours</em></h2></div>
+      <p class="lede">The machine does the searching, writing and record-keeping. You decide who's worth contacting and you send every email. Tap any step.</p>
+    </div>
+    <div class="loop">
+      <div class="legend">
+        <span><i class="dot"></i>Automatic</span>
+        <span><i class="dot dot--you"></i>You</span>
+        <span class="autoplay"><span id="playState">Playing</span><button type="button" id="playBtn">Pause</button></span>
+      </div>
+      <div class="stages-wrap">
+        <div class="rail" aria-hidden="true"><i id="railFill"></i></div>
+        <ol class="stages" id="stages"></ol>
+      </div>
+      <div class="detail" aria-live="polite">
+        <div class="detail__big" id="dBig">Discover</div>
+        <div class="detail__body">
+          <h3 id="dTitle">Boutiques come to us</h3>
+          <p id="dText">Two scouts go looking. One reads the "where to buy" pages on designers' websites. The other runs Google searches for boutiques that carry those designers. Anything new lands in Airtable waiting for your review.</p>
+          <div class="detail__chips" id="dChips"><span class="chip">stockist-scraper</span><span class="chip">google-discovery</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- THE CREW -->
+  <section class="block" id="crew" aria-labelledby="crewTitle">
+    <div class="sec-head">
+      <div><span class="caps">The crew</span><h2 id="crewTitle">One command <em>runs everyone</em></h2></div>
+      <p class="lede">The orchestrator is the conductor. It calls each script in turn, lets the two scouts work side by side at the end, then emails a report. Watch a run.</p>
+    </div>
+    <div class="run">
+      <div class="board">
+        <div class="conductor"><span class="conductor__pulse" aria-hidden="true"></span><span class="mono">orchestrator.js</span><span class="caps">The conductor · one command</span></div>
+        <div>
+          <div class="lane__label">First, one after another</div>
+          <div class="chain">
+            <span class="node" data-n="sends">detect-sends</span><span class="arrow" aria-hidden="true">→</span>
+            <span class="node" data-n="replies">detect-replies</span><span class="arrow" aria-hidden="true">→</span>
+            <span class="node" data-n="due">overdue-audit</span><span class="arrow" aria-hidden="true">→</span>
+            <span class="node" data-n="draft">draft-outreach</span><span class="arrow" aria-hidden="true">→</span>
+            <span class="node" data-n="check">sanity-check</span>
+          </div>
+        </div>
+        <div>
+          <div class="lane__label">Then, side by side</div>
+          <div class="parallel">
+            <span class="node" data-n="stock">stockist-scraper</span>
+            <span class="node" data-n="google">google-discovery</span>
+          </div>
+        </div>
+        <div>
+          <div class="lane__label">Finally</div>
+          <div class="chain"><span class="node" data-n="report">daily report → inbox</span></div>
+        </div>
+      </div>
+      <div class="term" aria-label="Example terminal output">
+        <div class="term__bar"><i></i><i></i><i></i><span>garmentory-outreach</span></div>
+        <div class="term__body" id="term">
+<div><span class="t-mu">$</span> node orchestrator.js --live</div>
+<div class="t-dim">  starting the daily run</div>
+<div><span class="t-ok">✓</span> detect-sends      <span class="t-dim">sends logged, bounces caught</span></div>
+<div><span class="t-ok">✓</span> detect-replies    <span class="t-dim">real replies marked Engaged</span></div>
+<div><span class="t-ok">✓</span> overdue-audit     <span class="t-dim">today's follow-ups found</span></div>
+<div><span class="t-ok">✓</span> draft-outreach    <span class="t-dim">emails waiting in Drafts</span></div>
+<div><span class="t-ok">✓</span> sanity-check      <span class="t-dim">anything odd is flagged</span></div>
+<div><span class="t-ok">✓</span> scouts            <span class="t-dim">new boutiques await review</span></div>
+<div><span class="t-mu">✉</span> report sent       <span class="t-dim">check your inbox</span></div>
+<div><span class="caret"></span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="crew">
+      <article class="mate"><div class="mate__role">The conductor</div><div class="mate__file">orchestrator.js</div><p>Runs everything below in the right order. Rehearses first (dry run) unless told to go live.</p><div class="mate__io"><span class="io io--r">Runs all</span><span class="io io--w">Emails report</span></div></article>
+      <article class="mate"><div class="mate__role">The mail clerk</div><div class="mate__file">detect-sends.js</div><p>Notices which emails went out and which bounced, and logs each one.</p><div class="mate__io"><span class="io io--r">Reads Gmail</span><span class="io io--w">Writes Airtable</span></div></article>
+      <article class="mate"><div class="mate__role">The listener</div><div class="mate__file">detect-replies.js</div><p>Spots real replies and stops the sequence. Ignores out-of-office bots.</p><div class="mate__io"><span class="io io--r">Reads Gmail</span><span class="io io--w">Writes Airtable</span></div></article>
+      <article class="mate"><div class="mate__role">The calendar</div><div class="mate__file">overdue-touch-audit.js</div><p>Works out which boutiques are due for their next email today.</p><div class="mate__io"><span class="io io--r">Reads Airtable</span></div></article>
+      <article class="mate"><div class="mate__role">The writer</div><div class="mate__file">draft-outreach.js</div><p>Writes the next email for each boutique that's due and saves it as a draft.</p><div class="mate__io"><span class="io io--r">Reads Airtable</span><span class="io io--w">Writes Drafts</span></div></article>
+      <article class="mate"><div class="mate__role">The editor</div><div class="mate__file">draft-sanity-check.js</div><p>Rereads every draft before you send, and flags a wrong name, address or step.</p><div class="mate__io"><span class="io io--r">Reads Drafts</span></div></article>
+      <article class="mate"><div class="mate__role">The scout</div><div class="mate__file">stockist-scraper.js</div><p>Reads designers' "where to buy" pages and collects the boutiques listed.</p><div class="mate__io"><span class="io io--r">Reads brand list</span><span class="io io--w">Adds to Airtable</span></div></article>
+      <article class="mate"><div class="mate__role">The researcher</div><div class="mate__file">google-boutique-discovery.js</div><p>Searches Google for boutiques carrying target designers, and skips existing partners.</p><div class="mate__io"><span class="io io--r">Uses SerpAPI</span><span class="io io--w">Adds to Airtable</span></div></article>
+    </div>
+  </section>
+
+  <!-- THE TOOLS -->
+  <section class="block" id="tools" aria-labelledby="toolsTitle">
+    <div class="sec-head">
+      <div><span class="caps">The tools</span><h2 id="toolsTitle">What the crew <em>works with</em></h2></div>
+      <p class="lede">Six services, each with one job. Every account belongs to Garmentory, so the system keeps working when people change roles.</p>
+    </div>
+    <div class="tools">
+      <article class="tool"><div><div class="tool__nick">the memory</div><h3>Airtable</h3></div><p>Every boutique, contact and email sent. Where each boutique is in its sequence.</p></article>
+      <article class="tool"><div><div class="tool__nick">the voice</div><h3>Gmail</h3></div><p>Drafts are written here and replies arrive here. You send from here.</p></article>
+      <article class="tool"><div><div class="tool__nick">the lists</div><h3>Google Sheets</h3></div><p>The Do Not Reach Out list, read-only, and the list of designers to search for.</p></article>
+      <article class="tool"><div><div class="tool__nick">the address book</div><h3>Hunter.io</h3></div><p>Finds the email of an owner or buyer when the website doesn't show one.</p></article>
+      <article class="tool"><div><div class="tool__nick">the search bar</div><h3>SerpAPI</h3></div><p>Runs Google searches on the researcher's behalf, on a set budget.</p></article>
+      <article class="tool"><div><div class="tool__nick">the guest list</div><h3>Redash</h3></div><p>Garmentory's own data. Tells the scouts which boutiques are already partners.</p></article>
+    </div>
+  </section>
+
+  <!-- THE SEQUENCE -->
+  <section class="block" id="sequence" aria-labelledby="seqTitle">
+    <div class="sec-head">
+      <div><span class="caps">The sequence</span><h2 id="seqTitle">Polite, patient, <em>persistent</em></h2></div>
+      <p class="lede">Each boutique gets a short series of emails, spaced out. The first three share one thread so the conversation reads naturally.</p>
+    </div>
+    <div class="seqs">
+      <div class="seq">
+        <div class="seq__head"><h3>Cold outreach</h3><p>For a boutique that's never heard from us.</p></div>
+        <div class="track-scroll">
+          <div class="track" id="trackCold">
+            <div class="track__line" aria-hidden="true"></div>
+            <div class="env" aria-hidden="true"><svg viewBox="0 0 30 26"><rect x="1" y="3" width="28" height="20" rx="3" fill="var(--mustard)" stroke="var(--ink)" stroke-width="1.5"/><path d="M2 5l13 10L28 5" fill="none" stroke="var(--ink)" stroke-width="1.5"/></svg></div>
+            <div class="thread" id="threadBox" aria-hidden="true"><span>one thread</span></div>
+            <div class="stop" data-thread="start"><div class="stop__dot">T1</div><div class="stop__label">Hello</div><div class="stop__note">Who we are and why them</div><span class="wait">three weeks</span></div>
+            <div class="stop"><div class="stop__dot">T2</div><div class="stop__label">Gentle nudge</div><div class="stop__note">A reply in the same thread</div><span class="wait">a little later</span></div>
+            <div class="stop" data-thread="end"><div class="stop__dot">T3</div><div class="stop__label">Last try</div><div class="stop__note">Still the same thread</div><span class="wait">a month on</span></div>
+            <div class="stop stop--alt"><div class="stop__dot">New</div><div class="stop__label">Someone else</div><div class="stop__note">A different person, a fresh thread</div><span class="wait">much later</span></div>
+            <div class="stop stop--end"><div class="stop__dot">Re</div><div class="stop__label">Re-engage</div><div class="stop__note">Occasional check-ins</div></div>
+          </div>
+        </div>
+        <div class="stopper"><strong>Any real reply</strong> stops the sequence on the spot. From there, it's a conversation and it's yours.</div>
+      </div>
+      <div class="seq">
+        <div class="seq__head"><h3>After a call</h3><p>When a boutique has spoken with us.</p></div>
+        <div class="track-scroll">
+          <div class="track track--post">
+            <div class="track__line" aria-hidden="true"></div>
+            <div class="env" aria-hidden="true"><svg viewBox="0 0 30 26"><rect x="1" y="3" width="28" height="20" rx="3" fill="var(--mustard)" stroke="var(--ink)" stroke-width="1.5"/><path d="M2 5l13 10L28 5" fill="none" stroke="var(--ink)" stroke-width="1.5"/></svg></div>
+            <div class="stop"><div class="stop__dot">Sum</div><div class="stop__label">Recap</div><div class="stop__note">What we talked about</div><span class="wait">a few days</span></div>
+            <div class="stop"><div class="stop__dot">PC1</div><div class="stop__label">Follow-up</div><div class="stop__note">Answer what's open</div><span class="wait">a week</span></div>
+            <div class="stop"><div class="stop__dot">PC2</div><div class="stop__label">Second follow-up</div><div class="stop__note">Keep it moving</div><span class="wait">a month</span></div>
+            <div class="stop stop--end"><div class="stop__dot">Re</div><div class="stop__label">Re-engage</div><div class="stop__note">Door left open</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- THE RULES -->
+  <section class="block" id="rules" aria-labelledby="rulesTitle">
+    <div class="sec-head">
+      <div><span class="caps">The rules</span><h2 id="rulesTitle">Lines it <em>never crosses</em></h2></div>
+      <p class="lede">Each rule exists because breaking it once landed in a real boutique's inbox. They're built into the code.</p>
+    </div>
+    <div class="rails">
+      <div class="rule"><svg viewBox="0 0 34 34" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="17" cy="17" r="13"/><path d="M8 26L26 8"/></svg><h3>Do Not Reach Out means never</h3><p>Anyone on the DNRO sheet is skipped everywhere. The sheet is read, never written.</p></div>
+      <div class="rule"><svg viewBox="0 0 34 34" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M17 4l11 4v8c0 7-5 12-11 14C11 28 6 23 6 16V8z"/><path d="M12 17l4 4 7-8"/></svg><h3>Partners are off-limits</h3><p>Live, onboarding and partner boutiques never get a cold email.</p></div>
+      <div class="rule"><svg viewBox="0 0 34 34" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="5" y="8" width="24" height="18" rx="3"/><path d="M6 10l11 8 11-8"/><path d="M22 4h8M26 0v8" transform="translate(0 2)"/></svg><h3>Drafts only</h3><p>The system writes. A person reads and sends. It never sends outreach on its own.</p></div>
+      <div class="rule"><svg viewBox="0 0 34 34" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 17h24M17 5v24" stroke-dasharray="3 3"/><circle cx="17" cy="17" r="7"/></svg><h3>Rehearse first</h3><p>Every run is a dry run until you add <span class="mono">--live</span>. Read what it plans, then let it act.</p></div>
+      <div class="rule"><svg viewBox="0 0 34 34" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="17" cy="12" r="5"/><path d="M7 29c1-6 5-9 10-9s9 3 10 9"/><path d="M24 4l3 3-3 3" /></svg><h3>Once written to, locked</h3><p>A contact we've emailed keeps their address. New info becomes a new contact, never an overwrite.</p></div>
+      <div class="rule"><svg viewBox="0 0 34 34" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="15" cy="15" r="9"/><path d="M22 22l7 7"/></svg><h3>Paid lookups, on purpose</h3><p>Hunter is used at three moments only: a new prospect, a second contact, a bounced address.</p></div>
+    </div>
+    <div class="watch">
+      <span class="watch__badge">Watch out</span>
+      <div>
+        <h3>Partners on vacation mode can look brand new</h3>
+        <p>When a partner pauses their store for a few days, the partner list can miss them, so a scout may report them as a new boutique. Before you promote a name you don't recognize, check it isn't already on Garmentory.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- YOUR DAY -->
+  <section class="block" id="day" aria-labelledby="dayTitle">
+    <div class="sec-head">
+      <div><span class="caps">Your day</span><h2 id="dayTitle">About twenty minutes <em>of you</em></h2></div>
+      <p class="lede">Start the run, go do something else, come back to drafts and a report. Tick these off as you go.</p>
+    </div>
+    <div class="day">
+      <ul class="checks">
+        <li><label class="check"><input type="checkbox" id="c1"><div><b>Start the run</b><span>One command. It rehearses unless you say <span class="mono">--live</span>.</span></div><em>first</em></label></li>
+        <li><label class="check"><input type="checkbox" id="c2"><div><b>Read the report</b><span>Errors first, then anything the editor flagged.</span></div><em>inbox</em></label></li>
+        <li><label class="check"><input type="checkbox" id="c3"><div><b>Send the drafts</b><span>Read each one. Fix or delete anything flagged.</span></div><em>Gmail</em></label></li>
+        <li><label class="check"><input type="checkbox" id="c4"><div><b>Review new boutiques</b><span>Multi-brand and US? Promote to New Prospect.</span></div><em>Airtable</em></label></li>
+        <li><label class="check"><input type="checkbox" id="c5"><div><b>Answer replies</b><span>Real conversations are yours. Book the calls.</span></div><em>you</em></label></li>
+      </ul>
+      <aside class="rebuild" aria-labelledby="rbTitle">
+        <span class="caps" style="opacity:.8">Setting it up</span>
+        <h3 id="rbTitle">Rebuilding it? Start in Claude Code.</h3>
+        <p>Put the rebuild guide in an empty folder as <span class="mono">REBUILD.md</span>, open Claude Code there, and paste this:</p>
+        <div class="prompt">
+          <code id="promptText">Read REBUILD.md. We're starting at Phase 0.</code>
+          <button class="copy" type="button" id="copyBtn"><span id="copyLabel">Copy</span><span class="arr" aria-hidden="true">→</span></button>
+        </div>
+        <ul>
+          <li>Create every account with your Garmentory email.</li>
+          <li>Keys go in the <span class="mono">.env</span> file, never in a chat.</li>
+          <li>One phase per session. Run the tests before moving on.</li>
+        </ul>
+      </aside>
+    </div>
+  </section>
+
+  <footer>
+    <span class="serif"><em>Outreach with intention.</em></span>
+    <span>Boutique acquisition system · handover edition</span>
+  </footer>
+</div>
+
+<script>
+(function(){
+  var root = document.documentElement;
+  var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* theme toggle */
+  var themeBtn = document.getElementById('themeBtn'), themeLabel = document.getElementById('themeLabel');
+  function isDark(){
+    var t = root.getAttribute('data-theme');
+    if (t) return t === 'dark';
+    return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+  }
+  function syncLabel(){ themeLabel.textContent = isDark() ? 'Light' : 'Dark'; }
+  try { var saved = localStorage.getItem('bas-theme'); if (saved) root.setAttribute('data-theme', saved); } catch(e){}
+  syncLabel();
+  themeBtn.addEventListener('click', function(){
+    var next = isDark() ? 'light' : 'dark';
+    root.setAttribute('data-theme', next);
+    try { localStorage.setItem('bas-theme', next); } catch(e){}
+    syncLabel();
+  });
+
+  /* the loop */
+  var STAGES = [
+    {big:'Discover', t:'Boutiques come to us', who:'auto', d:'Two scouts go looking. One reads the "where to buy" pages on designers\' websites. The other runs Google searches for boutiques that carry those designers. Anything new lands in Airtable waiting for your review.', c:['stockist-scraper','google-discovery','SerpAPI']},
+    {big:'Review', t:'You decide who fits', who:'you', d:'Look at each new boutique. Does it sell many brands, not just its own? Is it in the US? Is it already a Garmentory partner? Good ones become New Prospects. The rest are marked Not a Fit.', c:['Airtable','your judgment']},
+    {big:'Find', t:'The right person', who:'auto', d:'For every new prospect, the system looks for an owner or buyer email, from the boutique\'s own site or from Hunter.io.', c:['Hunter.io','website']},
+    {big:'Draft', t:'The next email, written', who:'auto', d:'Every boutique that\'s due gets the next email in its sequence, addressed to the right person and placed in the right thread, saved as a Gmail draft.', c:['draft-outreach','Gmail Drafts']},
+    {big:'Check', t:'A second pair of eyes', who:'auto', d:'Before you send anything, the editor rereads every open draft and flags a wrong recipient, a wrong step in the sequence, or a thread that no longer exists.', c:['draft-sanity-check']},
+    {big:'Send', t:'You press send', who:'you', d:'Read each draft. Fix or delete anything flagged. Send the rest. The system never sends outreach on its own, so nothing reaches a boutique without you.', c:['Gmail','you']},
+    {big:'Track', t:'Everything is remembered', who:'auto', d:'Sends, bounces and replies are logged against each boutique. A real reply stops the sequence and marks the boutique Engaged. Out-of-office replies are set aside.', c:['detect-sends','detect-replies','Airtable']},
+    {big:'Report', t:'A note at the end', who:'auto', d:'A daily email sums up the run: what went out, what bounced, who replied, which drafts need a look, and which new boutiques are waiting.', c:['orchestrator','your inbox']}
+  ];
+  var list = document.getElementById('stages'), rail = document.getElementById('railFill');
+  var dBig = document.getElementById('dBig'), dTitle = document.getElementById('dTitle'), dText = document.getElementById('dText'), dChips = document.getElementById('dChips');
+  var btns = [];
+  STAGES.forEach(function(s, i){
+    var li = document.createElement('li'); li.style.minWidth = '0';
+    var b = document.createElement('button');
+    b.type = 'button'; b.className = 'stage' + (s.who === 'you' ? ' you' : '');
+    b.innerHTML = '<span class="stage__n"><span>' + String(i+1).padStart(2,'0') + '</span><i class="dot' + (s.who==='you'?' dot--you':'') + '"></i></span>' +
+                  '<span class="stage__t">' + s.big + '</span>' +
+                  '<span class="stage__who">' + (s.who==='you' ? 'You' : 'Automatic') + '</span>';
+    b.addEventListener('click', function(){ show(i); hold(); });
+    li.appendChild(b); list.appendChild(li); btns.push(b);
+  });
+  var cur = 0;
+  function show(i){
+    cur = i;
+    btns.forEach(function(b, j){ b.classList.toggle('is-on', j === i); b.setAttribute('aria-pressed', j === i ? 'true' : 'false'); });
+    var s = STAGES[i];
+    dBig.textContent = s.big; dTitle.textContent = s.t; dText.textContent = s.d;
+    dChips.innerHTML = s.c.map(function(c){ return '<span class="chip">' + c + '</span>'; }).join('');
+    rail.style.width = (((i + 0.5) / STAGES.length) * 100) + '%';
+  }
+  var playing = !reduce, timer = null, holdTimer = null;
+  var playBtn = document.getElementById('playBtn'), playState = document.getElementById('playState');
+  function tick(){ show((cur + 1) % STAGES.length); }
+  function start(){ stop(); timer = setInterval(tick, 3400); }
+  function stop(){ if (timer) clearInterval(timer); timer = null; }
+  function syncPlay(){ playBtn.textContent = playing ? 'Pause' : 'Play'; playState.textContent = playing ? 'Playing' : 'Paused'; }
+  function hold(){ stop(); if (holdTimer) clearTimeout(holdTimer); if (playing) holdTimer = setTimeout(start, 9000); }
+  playBtn.addEventListener('click', function(){ playing = !playing; syncPlay(); if (playing) start(); else { stop(); if (holdTimer) clearTimeout(holdTimer); } });
+  show(0); syncPlay(); if (playing) start();
+
+  /* the crew run */
+  var term = document.getElementById('term');
+  var nodes = {}; document.querySelectorAll('.node').forEach(function(n){ nodes[n.dataset.n] = n; });
+  var RUN = [
+    {n:['sends'], line:'<span class="t-ok">✓</span> detect-sends      <span class="t-dim">sends logged, bounces caught</span>'},
+    {n:['replies'], line:'<span class="t-ok">✓</span> detect-replies    <span class="t-dim">real replies marked Engaged</span>'},
+    {n:['due'], line:'<span class="t-ok">✓</span> overdue-audit     <span class="t-dim">today\'s follow-ups found</span>'},
+    {n:['draft'], line:'<span class="t-ok">✓</span> draft-outreach    <span class="t-dim">emails waiting in Drafts</span>'},
+    {n:['check'], line:'<span class="t-ok">✓</span> sanity-check      <span class="t-dim">anything odd is flagged</span>'},
+    {n:['stock','google'], line:'<span class="t-ok">✓</span> scouts            <span class="t-dim">new boutiques await review</span>'},
+    {n:['report'], line:'<span class="t-mu">✉</span> report sent       <span class="t-dim">check your inbox</span>'}
+  ];
+  function addLine(html){
+    var caret = term.querySelector('.caret'); var cl = caret ? caret.parentNode : null;
+    var d = document.createElement('div'); d.innerHTML = html;
+    if (cl) term.insertBefore(d, cl); else term.appendChild(d);
+  }
+  function resetRun(){
+    Object.keys(nodes).forEach(function(k){ nodes[k].classList.remove('is-run','is-done'); });
+    term.innerHTML = '<div><span class="caret"></span></div>';
+  }
+  function typeCmd(text, done){
+    var caretLine = term.querySelector('.caret').parentNode;
+    var d = document.createElement('div'); d.innerHTML = '<span class="t-mu">$</span> ';
+    term.insertBefore(d, caretLine);
+    var i = 0;
+    (function step(){ if (i < text.length){ d.appendChild(document.createTextNode(text[i++])); setTimeout(step, 45); } else done(); })();
+  }
+  function play(){
+    resetRun();
+    setTimeout(function(){
+      typeCmd('node orchestrator.js --live', function(){
+        addLine('<span class="t-dim">  starting the daily run</span>');
+        var k = 0;
+        (function next(){
+          if (k >= RUN.length){ setTimeout(play, 5200); return; }
+          var step = RUN[k];
+          step.n.forEach(function(n){ nodes[n].classList.add('is-run'); });
+          setTimeout(function(){
+            step.n.forEach(function(n){ nodes[n].classList.remove('is-run'); nodes[n].classList.add('is-done'); });
+            addLine(step.line); k++; next();
+          }, 1050);
+        })();
+      });
+    }, 700);
+  }
+  if (!reduce){
+    var started = false;
+    var io = 'IntersectionObserver' in window ? new IntersectionObserver(function(es){
+      es.forEach(function(e){ if (e.isIntersecting && !started){ started = true; play(); } });
+    }, {threshold:.25}) : null;
+    if (io) io.observe(document.getElementById('crew')); else play();
+  } else {
+    Object.keys(nodes).forEach(function(k){ nodes[k].classList.add('is-done'); });
+  }
+
+  /* thread bracket over T1..T3 */
+  function placeThread(){
+    var track = document.getElementById('trackCold'), box = document.getElementById('threadBox');
+    var a = track.querySelector('[data-thread="start"] .stop__dot'), b = track.querySelector('[data-thread="end"] .stop__dot');
+    if (!a || !b) return;
+    var tr = track.getBoundingClientRect(), ra = a.getBoundingClientRect(), rb = b.getBoundingClientRect();
+    box.style.left = (ra.left - tr.left) + 'px';
+    box.style.width = (rb.right - ra.left) + 'px';
+    box.style.top = (ra.top - tr.top - 62) + 'px';
+  }
+  placeThread(); window.addEventListener('resize', placeThread);
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(placeThread);
+
+  /* copy */
+  var copyBtn = document.getElementById('copyBtn'), copyLabel = document.getElementById('copyLabel'), promptText = document.getElementById('promptText');
+  copyBtn.addEventListener('click', function(){
+    var txt = promptText.textContent;
+    function selectIt(){ var r = document.createRange(); r.selectNodeContents(promptText); var s = window.getSelection(); s.removeAllRanges(); s.addRange(r); copyLabel.textContent = 'Selected'; }
+    try {
+      navigator.clipboard.writeText(txt).then(function(){ copyLabel.textContent = 'Copied'; }, selectIt);
+    } catch(e){ selectIt(); }
+    setTimeout(function(){ copyLabel.textContent = 'Copy'; }, 2200);
+  });
+})();
+</script>
+</body>
+</html>
